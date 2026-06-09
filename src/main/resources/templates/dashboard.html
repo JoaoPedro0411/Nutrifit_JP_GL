@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::main})}">
+<head>
+    <title>Dashboard - NutriFit</title>
+</head>
+<body>
+<main class="page-content">
+    <section class="dashboard-container">
+        <div class="form-title">
+            <h1>Dashboard</h1>
+            <p th:text="${mensagem}">Acompanhe seus dados no NutriFit.</p>
+        </div>
+
+        <div sec:authorize="isAnonymous()" class="list-container">
+            <p>Faça login para acessar refeições, treinos, planos alimentares, agendamentos e hidratação.</p>
+        </div>
+
+        <div sec:authorize="isAuthenticated()" class="list-container">
+            <p>
+                Usuário autenticado:
+                <strong sec:authentication="name">usuario@email.com</strong>
+            </p>
+        </div>
+
+        <div class="dashboard-action" sec:authorize="isAnonymous()">
+            <a th:href="@{/login}">Entrar</a>
+        </div>
+
+        <div class="dashboard-action" sec:authorize="hasRole('USUARIO')">
+            <a th:href="@{/refeicoes}">Refeições</a>
+            <a th:href="@{/treinos}">Treinos</a>
+            <a th:href="@{/hidratacao}">Hidratação</a>
+        </div>
+    </section>
+</main>
+</body>
+</html>

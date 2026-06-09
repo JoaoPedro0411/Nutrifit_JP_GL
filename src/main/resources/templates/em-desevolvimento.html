@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::main})}">
+<head>
+    <title>Essa pagina ainda é pra testes do login</title>
+</head>
+<body>
+<main class="page-content">
+    <section class="card-container">
+        <div class="form-title">
+                <p>O spring security já esta protejendo essa tela, depois vamos implementando o restante </p>.
+        </div>
+
+        <div class="dashboard-action">
+            <a th:href="@{/dashboard}">Voltar para o dashboard</a>
+        </div>
+    </section>
+</main>
+</body>
+</html>
