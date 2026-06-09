@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Planos Alimentares</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<main class="page-content">
+    <section class="list-container">
+        <div class="form-title">
+            <h1>Planos Alimentares</h1>
+            <a th:href="@{/planos/novo}">Novo Plano</a>
+        </div>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Meta (kcal)</th>
+                <th>Início</th>
+                <th>Fim</th>
+                <th>Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${planos}">
+                <td th:text="${p.nome}">Nome</td>
+                <td th:text="${p.metaCaloriasDiarias}">0</td>
+                <td th:text="${p.dataInicio}">-</td>
+                <td th:text="${p.dataFim}">-</td>
+                <td>
+                    <a th:href="@{/planos/detalhes/{id}(id=${p.id})}">Detalhes</a>
+                    <a th:href="@{/planos/editar/{id}(id=${p.id})}">Editar</a>
+                    <form th:action="@{/planos/excluir/{id}(id=${p.id})}" method="post" style="display:inline">
+                        <button type="submit">Excluir</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+</body>
+</html>

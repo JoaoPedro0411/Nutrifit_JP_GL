@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR"
       xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       th:replace="~{fragments/layout :: layout(~{::title}, ~{::main})}">
 <head>
     <title>Dashboard - NutriFit</title>
@@ -14,25 +13,52 @@
             <p th:text="${mensagem}">Acompanhe seus dados no NutriFit.</p>
         </div>
 
-        <div sec:authorize="isAnonymous()" class="list-container">
+        <div th:if="${usuarioLogado == null}" class="list-container">
             <p>Faça login para acessar refeições, treinos, planos alimentares, agendamentos e hidratação.</p>
         </div>
 
-        <div sec:authorize="isAuthenticated()" class="list-container">
+        <div th:if="${usuarioLogado != null}" class="list-container">
             <p>
                 Usuário autenticado:
-                <strong sec:authentication="name">usuario@email.com</strong>
+                <strong th:text="${usuarioLogado.email}">usuario@email.com</strong>
             </p>
+
+            <div class="dashboard-grid" th:if="${resumo != null}">
+                <article class="dashboard-card">
+                    <span>Refeições</span>
+                    <strong th:text="${resumo.totalRefeicoes}">0</strong>
+                </article>
+                <article class="dashboard-card">
+                    <span>Planos</span>
+                    <strong th:text="${resumo.totalPlanosAlimentares}">0</strong>
+                </article>
+                <article class="dashboard-card">
+                    <span>Treinos</span>
+                    <strong th:text="${resumo.totalTreinos}">0</strong>
+                </article>
+                <article class="dashboard-card">
+                    <span>Hidratação Hoje</span>
+                    <strong th:text="${resumo.hidratacaoHoje != null ? resumo.hidratacaoHoje.consumidoMl : 0}">0</strong>
+                </article>
+            </div>
+
+            <div class="dashboard-panel" th:if="${resumo != null}">
+                <p><strong>Nome:</strong> <span th:text="${resumo.nomeUsuario}"></span></p>
+                <p><strong>Objetivo:</strong> <span th:text="${resumo.objetivoUsuario}"></span></p>
+                <p><strong>Próximo agendamento:</strong> <span th:text="${resumo.proximoAgendamento != null ? resumo.proximoAgendamento.titulo : 'Nenhum agendamento futuro'}"></span></p>
+                <p><strong>Percentual de hidratação:</strong> <span th:text="${resumo.percentualHidratacao}"></span>%</p>
+                <p><strong>Restante:</strong> <span th:text="${resumo.restanteHidratacaoMl}"></span> ml</p>
+            </div>
         </div>
 
-        <div class="dashboard-action" sec:authorize="isAnonymous()">
+        <div class="dashboard-action" th:if="${usuarioLogado == null}">
             <a th:href="@{/login}">Entrar</a>
         </div>
 
-        <div class="dashboard-action" sec:authorize="hasRole('USUARIO')">
+        <div class="dashboard-action" th:if="${usuarioLogado != null}">
             <a th:href="@{/refeicoes}">Refeições</a>
             <a th:href="@{/treinos}">Treinos</a>
-            <a th:href="@{/hidratacao}">Hidratação</a>
+            <a th:href="@{/hidratacoes}">Hidratação</a>
         </div>
     </section>
 </main>

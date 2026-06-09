@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - NutriFit</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    </head>
+<body>
+<nav class="navSuperior">
+    <span class="logo">NutriFit</span>
+    <ul>
+        <li><a th:href="@{/login}">Entrar</a></li>
+    </ul>
+</nav>
+
+<main class="auth-main">
+    <div class="form-container">
+        <form th:action="@{/cadastro}" th:object="${usuario}" method="post">
+            <div class="form-title">
+                <h1>Cadastro</h1>
+            </div>
+
+            <div th:if="${mensagemErro}" class="alert alert-error">
+                <span th:text="${mensagemErro}"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="nome">Nome</label>
+                <input type="text" id="nome" th:field="*{nome}" required maxlength="80">
+            </div>
+
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" th:field="*{email}" required maxlength="100">
+            </div>
+
+            <div class="form-group">
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" th:field="*{senha}" required minlength="6">
+            </div>
+
+            <div class="form-group">
+                <label for="peso">Peso (kg)</label>
+                <input type="number" step="0.1" id="peso" th:field="*{peso}" required min="20" max="400">
+            </div>
+
+            <div class="form-group">
+                <label for="altura">Altura (m)</label>
+                <input type="number" step="0.01" id="altura" th:field="*{altura}" required min="0.5" max="2.5">
+            </div>
+
+            <div class="form-group">
+                <label for="objetivo">Objetivo</label>
+                <select id="objetivo" th:field="*{objetivo}" required>
+                    <option th:each="op : ${T(br.edu.nutrifit.model.enums.EObjetivoUsuario).values()}"
+                            th:value="${op}" th:text="${op}"></option>
+                </select>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit">Cadastrar</button>
+            </div>
+        </form>
+    </div>
+</main>
+
+</body>
+</html>

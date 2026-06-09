@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Refeições</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<main class="page-content">
+    <section class="list-container">
+        <div class="form-title">
+            <h1>Refeições</h1>
+            <a th:href="@{/refeicoes/novo}">Nova Refeição</a>
+        </div>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Tipo</th>
+                <th>Calorias</th>
+                <th>Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="r : ${refeicoes}">
+                <td th:text="${r.nome}">Nome</td>
+                <td th:text="${r.tipoRefeicao}">Tipo</td>
+                <td th:text="${r.calorias}">0</td>
+                <td>
+                    <a th:href="@{/refeicoes/detalhes/{id}(id=${r.id})}">Detalhes</a>
+                    <a th:href="@{/refeicoes/editar/{id}(id=${r.id})}">Editar</a>
+                    <form th:action="@{/refeicoes/excluir/{id}(id=${r.id})}" method="post" style="display:inline">
+                        <button type="submit">Excluir</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+</body>
+</html>

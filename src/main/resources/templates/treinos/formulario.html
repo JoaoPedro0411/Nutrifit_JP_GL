@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Treino</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<main class="page-content">
+    <section class="form-container">
+        <div class="form-title">
+            <h1 th:text="${treino.id == null} ? 'Novo Treino' : 'Editar Treino'"></h1>
+        </div>
+
+        <form th:action="@{/treinos/salvar}" th:object="${treino}" method="post">
+            <input type="hidden" th:field="*{id}">
+
+            <div>
+                <label>Nome</label>
+                <input type="text" th:field="*{nome}" required maxlength="80">
+            </div>
+
+            <div>
+                <label>Descrição</label>
+                <textarea th:field="*{descricao}" maxlength="500"></textarea>
+            </div>
+
+            <div>
+                <label>Tipo</label>
+                <select th:field="*{tipoTreino}" required>
+                    <option th:each="t : ${T(br.edu.nutrifit.model.enums.ETipoTreino).values()}" th:value="${t}" th:text="${t}"></option>
+                </select>
+            </div>
+
+            <div>
+                <label>Nível</label>
+                <select th:field="*{nivel}" required>
+                    <option th:each="n : ${T(br.edu.nutrifit.model.enums.ENivelTreino).values()}" th:value="${n}" th:text="${n}"></option>
+                </select>
+            </div>
+
+            <div>
+                <label>Duração (min)</label>
+                <input type="number" th:field="*{duracaoMinutos}" min="1" required>
+            </div>
+
+            <div>
+                <label>Frequência Semanal</label>
+                <input type="number" th:field="*{frequenciaSemanal}" min="1" max="7" required>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit">Salvar</button>
+                <a th:href="@{/treinos}">Cancelar</a>
+            </div>
+        </form>
+    </section>
+</main>
+</body>
+</html>

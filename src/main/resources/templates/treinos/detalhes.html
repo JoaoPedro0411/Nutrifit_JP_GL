@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalhes - Treino</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<main class="page-content">
+    <section class="details-container">
+        <h1 th:text="${treino.nome}">Nome Treino</h1>
+        <p><strong>Tipo:</strong> <span th:text="${treino.tipoTreino}"></span></p>
+        <p><strong>Nível:</strong> <span th:text="${treino.nivel}"></span></p>
+        <p><strong>Duração:</strong> <span th:text="${treino.duracaoMinutos}"></span> minutos</p>
+        <p><strong>Frequência semanal:</strong> <span th:text="${treino.frequenciaSemanal}"></span></p>
+        <p><strong>Descrição:</strong></p>
+        <p th:text="${treino.descricao}"></p>
+        <a th:href="@{/treinos}">Voltar</a>
+    </section>
+</main>
+</body>
+</html>

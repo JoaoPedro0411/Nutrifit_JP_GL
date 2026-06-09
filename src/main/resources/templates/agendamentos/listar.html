@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Agendamentos</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<main class="page-content">
+    <section class="list-container">
+        <div class="form-title">
+            <h1>Agendamentos</h1>
+            <a th:href="@{/agendamentos/novo}">Novo Agendamento</a>
+        </div>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Título</th>
+                <th>Data/Hora</th>
+                <th>Tipo</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="a : ${agendamentos}">
+                <td th:text="${a.titulo}">Título</td>
+                <td th:text="${a.dataHora}">-</td>
+                <td th:text="${a.tipoAgendamento}">Tipo</td>
+                <td th:text="${a.status}">Status</td>
+                <td>
+                    <a th:href="@{/agendamentos/detalhes/{id}(id=${a.id})}">Detalhes</a>
+                    <a th:href="@{/agendamentos/editar/{id}(id=${a.id})}">Editar</a>
+                    <form th:action="@{/agendamentos/excluir/{id}(id=${a.id})}" method="post" style="display:inline">
+                        <button type="submit">Excluir</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Hidratação</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<main class="page-content">
+    <section class="form-container">
+        <div class="form-title">
+            <h1 th:text="${hidratacao.id == null} ? 'Registrar Hidratação' : 'Editar Registro'"></h1>
+        </div>
+
+        <form th:action="@{/hidratacoes/salvar}" th:object="${hidratacao}" method="post">
+            <input type="hidden" th:field="*{id}">
+
+            <div>
+                <label>Data</label>
+                <input type="date" th:field="*{data}" required>
+            </div>
+
+            <div>
+                <label>Meta (ml)</label>
+                <input type="number" th:field="*{metaMl}" min="500" max="10000" required>
+            </div>
+
+            <div>
+                <label>Consumido (ml)</label>
+                <input type="number" th:field="*{consumidoMl}" min="0" max="15000" required>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit">Salvar</button>
+                <a th:href="@{/hidratacoes}">Cancelar</a>
+            </div>
+        </form>
+    </section>
+</main>
+</body>
+</html>

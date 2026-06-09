@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Plano Alimentar</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<main class="page-content">
+    <section class="form-container">
+        <div class="form-title">
+            <h1 th:text="${plano.id == null} ? 'Novo Plano' : 'Editar Plano'"></h1>
+        </div>
+
+        <form th:action="@{/planos/salvar}" th:object="${plano}" method="post">
+            <input type="hidden" th:field="*{id}">
+
+            <div>
+                <label>Nome</label>
+                <input type="text" th:field="*{nome}" required maxlength="80">
+            </div>
+
+            <div>
+                <label>Descrição</label>
+                <textarea th:field="*{descricao}" maxlength="500"></textarea>
+            </div>
+
+            <div>
+                <label>Meta Calórica Diária</label>
+                <input type="number" th:field="*{metaCaloriasDiarias}" min="1" required>
+            </div>
+
+            <div>
+                <label>Data Início</label>
+                <input type="date" th:field="*{dataInicio}" required>
+            </div>
+
+            <div>
+                <label>Data Fim</label>
+                <input type="date" th:field="*{dataFim}">
+            </div>
+
+            <div>
+                <label>Refeições</label>
+                <div th:each="r : ${refeicoesDisponiveis}">
+                    <label>
+                        <input type="checkbox" name="refeicoesIds" th:value="${r.id}" th:checked="${plano.refeicoes.contains(r)}"> <span th:text="${r.nome}"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit">Salvar</button>
+                <a th:href="@{/planos}">Cancelar</a>
+            </div>
+        </form>
+    </section>
+</main>
+</body>
+</html>

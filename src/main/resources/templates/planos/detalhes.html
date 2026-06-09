@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalhes - Plano</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<main class="page-content">
+    <section class="details-container">
+        <h1 th:text="${plano.nome}">Nome Plano</h1>
+        <p><strong>Meta:</strong> <span th:text="${plano.metaCaloriasDiarias}"></span> kcal</p>
+        <p><strong>Período:</strong> <span th:text="${plano.dataInicio}"></span> - <span th:text="${plano.dataFim}"></span></p>
+        <h3>Refeições</h3>
+        <ul>
+            <li th:each="r : ${plano.refeicoes}" th:text="${r.nome}">Refeição</li>
+        </ul>
+        <a th:href="@{/planos}">Voltar</a>
+    </section>
+</main>
+</body>
+</html>

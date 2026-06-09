@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Hidratações</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<main class="page-content">
+    <section class="list-container">
+        <div class="form-title">
+            <h1>Hidratações</h1>
+            <a th:href="@{/hidratacoes/novo}">Novo Registro</a>
+        </div>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Data</th>
+                <th>Meta (ml)</th>
+                <th>Consumido (ml)</th>
+                <th>%</th>
+                <th>Restante (ml)</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="h : ${hidratacoes}">
+                <td th:text="${h.data}">-</td>
+                <td th:text="${h.metaMl}">0</td>
+                <td th:text="${h.consumidoMl}">0</td>
+                <td th:text="${h.calcularPercentual()}">0</td>
+                <td th:text="${h.calcularRestanteMl()}">0</td>
+                <td th:text="${h.status}"></td>
+                <td>
+                    <a th:href="@{/hidratacoes/detalhes/{id}(id=${h.id})}">Detalhes</a>
+                    <a th:href="@{/hidratacoes/editar/{id}(id=${h.id})}">Editar</a>
+                    <form th:action="@{/hidratacoes/excluir/{id}(id=${h.id})}" method="post" style="display:inline">
+                        <button type="submit">Excluir</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+</body>
+</html>

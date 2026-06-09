@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalhes - Agendamento</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<main class="page-content">
+    <section class="details-container">
+        <h1 th:text="${agendamento.titulo}">Título</h1>
+        <p><strong>Data/Hora:</strong> <span th:text="${agendamento.dataHora}"></span></p>
+        <p><strong>Tipo:</strong> <span th:text="${agendamento.tipoAgendamento}"></span></p>
+        <p><strong>Status:</strong> <span th:text="${agendamento.status}"></span></p>
+        <p><strong>Descrição:</strong></p>
+        <p th:text="${agendamento.descricao}"></p>
+        <a th:href="@{/agendamentos}">Voltar</a>
+    </section>
+</main>
+</body>
+</html>

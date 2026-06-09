@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalhes - Hidratação</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<main class="page-content">
+    <section class="details-container">
+        <h1 th:text="${hidratacao.data}">Data</h1>
+        <p><strong>Meta:</strong> <span th:text="${hidratacao.metaMl}"></span> ml</p>
+        <p><strong>Consumido:</strong> <span th:text="${hidratacao.consumidoMl}"></span> ml</p>
+        <p><strong>Percentual:</strong> <span th:text="${hidratacao.calcularPercentual()}"></span> %</p>
+        <p><strong>Restante (ml):</strong> <span th:text="${hidratacao.calcularRestanteMl()}"></span></p>
+        <p><strong>Status:</strong> <span th:text="${hidratacao.status}"></span></p>
+        <a th:href="@{/hidratacoes}">Voltar</a>
+    </section>
+</main>
+</body>
+</html>

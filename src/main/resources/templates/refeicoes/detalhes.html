@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalhes - Refeição</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<main class="page-content">
+    <section class="details-container">
+        <h1 th:text="${refeicao.nome}">Nome Refeição</h1>
+        <p><strong>Tipo:</strong> <span th:text="${refeicao.tipoRefeicao}"></span></p>
+        <p><strong>Calorias:</strong> <span th:text="${refeicao.calorias}"></span></p>
+        <p><strong>Proteínas:</strong> <span th:text="${refeicao.proteinas}"></span> g</p>
+        <p><strong>Carboidratos:</strong> <span th:text="${refeicao.carboidratos}"></span> g</p>
+        <p><strong>Gorduras:</strong> <span th:text="${refeicao.gorduras}"></span> g</p>
+        <p><strong>Descrição:</strong></p>
+        <p th:text="${refeicao.descricao}"></p>
+        <a th:href="@{/refeicoes}">Voltar</a>
+    </section>
+</main>
+</body>
+</html>

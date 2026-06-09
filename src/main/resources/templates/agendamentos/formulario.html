@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Agendamento</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<main class="page-content">
+    <section class="form-container">
+        <div class="form-title">
+            <h1 th:text="${agendamento.id == null} ? 'Novo Agendamento' : 'Editar Agendamento'"></h1>
+        </div>
+
+        <form th:action="@{/agendamentos/salvar}" th:object="${agendamento}" method="post">
+            <input type="hidden" th:field="*{id}">
+
+            <div>
+                <label>Título</label>
+                <input type="text" th:field="*{titulo}" required maxlength="80">
+            </div>
+
+            <div>
+                <label>Descrição</label>
+                <textarea th:field="*{descricao}" maxlength="500"></textarea>
+            </div>
+
+            <div>
+                <label>Data/Hora</label>
+                <input type="datetime-local" th:field="*{dataHora}" required>
+            </div>
+
+            <div>
+                <label>Tipo</label>
+                <select th:field="*{tipoAgendamento}" required>
+                    <option th:each="t : ${T(br.edu.nutrifit.model.enums.ETipoAgendamento).values()}" th:value="${t}" th:text="${t}"></option>
+                </select>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit">Salvar</button>
+                <a th:href="@{/agendamentos}">Cancelar</a>
+            </div>
+        </form>
+    </section>
+</main>
+</body>
+</html>
