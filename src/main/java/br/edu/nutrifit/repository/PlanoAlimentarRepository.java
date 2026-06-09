@@ -1,21 +1,16 @@
 package br.edu.nutrifit.repository;
 
 import br.edu.nutrifit.model.PlanoAlimentar;
+import br.edu.nutrifit.model.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
-public interface PlanoAlimentarRepository
-        extends JpaRepository<PlanoAlimentar, Long> {
-
-    public List<PlanoAlimentar> findByUsuarioId(Long usuarioId);
-
-    public List<PlanoAlimentar> findByUsuarioIdOrderByDataInicioDesc(Long usuarioId);
-
-    public List<PlanoAlimentar> findByUsuarioIdAndNomeLike(Long usuarioId, String nome);
-
-    public List<PlanoAlimentar> findByUsuarioIdAndDataInicioLessThanEqual(Long usuarioId, LocalDate data);
-
-    public long countByUsuarioId(Long usuarioId);
+@Repository
+public interface PlanoAlimentarRepository extends JpaRepository<PlanoAlimentar, Long> {
+    List<PlanoAlimentar> findByUsuarioOrderByDataInicioDesc(Usuario usuario);
+    Optional<PlanoAlimentar> findByIdAndUsuario(Long id, Usuario usuario);
+    long countByUsuario(Usuario usuario);
 }

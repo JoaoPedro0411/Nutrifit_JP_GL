@@ -58,7 +58,7 @@ public class Usuario {
     @Column(length = 30, nullable = false)
     private EObjetivoUsuario objetivo;
 
-    @Column(nullable = true, updatable = true)
+    @Column(nullable = false, updatable = false)
     private LocalDateTime dataCadastro;
 
     @Column(nullable = false)

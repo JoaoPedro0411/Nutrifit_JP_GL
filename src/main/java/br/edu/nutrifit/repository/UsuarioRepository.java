@@ -5,25 +5,28 @@ import br.edu.nutrifit.model.enums.EPerfilUsuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface UsuarioRepository
-        extends JpaRepository<Usuario, Long> {
+public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
-    public Usuario findByEmail(String email);
+    Optional<Usuario> findByEmail(String email);
 
-    public Usuario findByEmailAndSenhaAndAtivoTrue(String email, String senha);
+    Optional<Usuario> findByEmailAndSenhaAndAtivoTrue(String email, String senha);
 
-    public List<Usuario> findByNomeLike(String nome);
+    List<Usuario> findByNomeLike(String nome);
 
-    public List<Usuario> findByAtivoTrueOrderByNomeAsc();
+    List<Usuario> findByAtivoTrueOrderByNomeAsc();
 
-    public boolean existsByEmail(String email);
+    boolean existsByEmail(String email);
 
-    public long countByAtivoTrue();
+    boolean existsByEmailAndIdNot(String email, Long id);
 
-    public List<Usuario> findByPerfil(EPerfilUsuario perfil);
+    long countByAtivoTrue();
 
-    public long countByPerfil(EPerfilUsuario perfil);
+    List<Usuario> findByPerfil(EPerfilUsuario perfil);
 
-    public List<Usuario> findByPerfilAndAtivoTrueOrderByNomeAsc(EPerfilUsuario perfil);
+    long countByPerfil(EPerfilUsuario perfil);
+
+    List<Usuario> findByPerfilAndAtivoTrueOrderByNomeAsc(EPerfilUsuario perfil);
+
 }

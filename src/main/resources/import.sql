@@ -1,0 +1,2 @@
+INSERT INTO usuario (altura, ativo, peso, data_cadastro, nome, email, senha, objetivo, perfil) VALUES (1.75, TRUE, 75.0, CURRENT_TIMESTAMP(), 'Usuario Teste', 'user@example.com', 'senha', 'MANTER_PESO', 'USUARIO');
+INSERT INTO usuario (altura, ativo, peso, data_cadastro, nome, email, senha, objetivo, perfil) VALUES (1.80, TRUE, 85.0, CURRENT_TIMESTAMP(), 'Admin Teste', 'admin@example.com', 'adminpass', 'GANHAR_MASSA', 'ADMINISTRADOR');

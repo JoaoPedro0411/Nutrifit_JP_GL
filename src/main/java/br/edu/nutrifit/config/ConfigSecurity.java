@@ -18,27 +18,12 @@ public class ConfigSecurity {
     }
     @Bean
     public SecurityFilterChain webSecurity(HttpSecurity http) throws Exception {
-
-        http.authorizeHttpRequests( (auth) ->{
-            auth.requestMatchers("/", "/dashboard",
-                            "/css/**", "/js/**", "/images/**", "/login",
-                            "/h2-console", "/h2-console/**").permitAll()
-                    .requestMatchers("/refeicoes", "/refeicoes/**").hasRole("USUARIO")
-                    .requestMatchers("/treinos", "/treinos/**").hasRole("USUARIO")
-                    .requestMatchers("/planos", "/planos/**").hasRole("USUARIO")
-                    .requestMatchers("/agendamentos", "/agendamentos/**").hasRole("USUARIO")
-                    .requestMatchers("/hidratacao", "/hidratacao/**").hasRole("USUARIO")
-                    .requestMatchers("/usuarios", "/usuarios/**").hasRole("ADMIN")
-                    .anyRequest().authenticated();
-        } ).formLogin( f ->{
-            f.loginPage("/login")
-                    .failureUrl("/login?fail")
-                    .defaultSuccessUrl("/dashboard").permitAll();
-        }).logout( l ->{
-            l.logoutUrl("/logout")
-                    .logoutSuccessUrl("/dashboard").permitAll();
-        });
-
+        // For MVP simplicity we allow all requests and use manual session control.
+        http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+        // Disable CSRF for the MVP so the login form can POST without a token
+        http.csrf(csrf -> csrf.disable());
+        // Disable Spring Security's default form login so our AuthController handles /login
+        http.formLogin(form -> form.disable());
         return http.build();
 
     }

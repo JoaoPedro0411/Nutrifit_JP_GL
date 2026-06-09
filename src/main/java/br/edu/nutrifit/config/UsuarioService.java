@@ -20,10 +20,8 @@ public class UsuarioService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException {
 
-        Usuario u = urepo.findByEmail(username);
-        if (u == null){
-            throw new UsernameNotFoundException("E-mail não encontrado!!!");
-        }
+        var opt = urepo.findByEmail(username);
+        Usuario u = opt.orElseThrow(() -> new UsernameNotFoundException("E-mail não encontrado!!!"));
 
         if (u.getAtivo() == null || !u.getAtivo()){
             throw new UsernameNotFoundException("Usuário inativo!!!");
