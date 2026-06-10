@@ -1,0 +1,99 @@
+Tutorial de execução do NutriFit
+
+1. Pré-requisitos
+- Java 17 instalado em C:\Program Files\Java\jdk-17
+- Maven Wrapper do projeto disponível via `./mvnw` ou `mvnw.cmd`
+- PowerShell no Windows
+
+2. Abrir o projeto no terminal
+- Entre na pasta raiz do projeto:
+
+  cd C:\Users\gabri\Documents\daves\POOA\Nutrifit_JP_GL
+
+3. Configurar o Java no terminal
+- No PowerShell, execute:
+
+  $env:JAVA_HOME='C:\Program Files\Java\jdk-17'
+  $env:PATH = $env:JAVA_HOME + '\\bin;' + $env:PATH
+
+4. Rodar o projeto em desenvolvimento
+- Comando principal:
+
+  ./mvnw -DskipTests spring-boot:run
+
+- O sistema sobe por padrão em:
+
+  http://localhost:9000
+
+- O perfil ativo padrão é `dev`.
+
+5. Compilar o projeto sem executar a aplicação
+- Se quiser apenas validar a compilação:
+
+  ./mvnw clean compile
+
+6. Acessar a aplicação
+- Página inicial:
+
+  http://localhost:9000/
+
+- Login:
+
+  http://localhost:9000/login
+
+- Dashboard:
+
+  http://localhost:9000/dashboard
+
+- Console do H2:
+
+  http://localhost:9000/h2-console
+
+7. Credenciais de teste
+- Usuário comum:
+  - e-mail: user@example.com
+  - senha: senha
+
+- Administrador:
+  - e-mail: admin@example.com
+  - senha: adminpass
+
+8. Banco de dados
+- No perfil `dev`, o projeto usa H2 em memória.
+- O banco é recriado ao iniciar a aplicação.
+- Os dados iniciais são carregados automaticamente pelo `import.sql`.
+
+9. Como parar a aplicação
+- No terminal em que o Spring Boot estiver rodando, pressione:
+
+  Ctrl + C
+
+10. Rodar em produção local com MySQL
+- O perfil `prod` usa MySQL e fica configurado em `src/main/resources/application-prod.properties`.
+- Antes de usar, ajuste usuário, senha e URL do banco.
+- Para iniciar com esse perfil:
+
+  $env:PROFILE='prod'
+  ./mvnw -DskipTests spring-boot:run
+
+11. Observações úteis
+- Se a porta 9000 estiver ocupada, ajuste a variável `PORT` antes de iniciar:
+
+  $env:PORT='8080'
+  ./mvnw -DskipTests spring-boot:run
+
+- Se o comando `./mvnw` não funcionar no PowerShell, use:
+
+  .\mvnw.cmd -DskipTests spring-boot:run
+
+- As rotas privadas exigem login com sessão HTTP.
+- O login e o logout são tratados pela aplicação, não pela tela padrão do Spring Security.
+
+12. Fluxo básico de teste
+- Inicie a aplicação.
+- Abra `/login`.
+- Entre com um dos usuários de teste.
+- Verifique o redirecionamento para `/dashboard`.
+- Navegue pelos módulos de refeições, treinos, planos, agendamentos e hidratação.
+
+Fim.

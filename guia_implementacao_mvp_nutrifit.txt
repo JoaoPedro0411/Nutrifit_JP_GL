@@ -1,0 +1,443 @@
+NUTRIFIT - GUIA DE IMPLEMENTAÇÃO DO MVP
+Documento de orientação técnica para finalizar o projeto com Spring Boot, Thymeleaf e Spring Data JPA
+
+================================================================================
+INFORMAÇÕES GERAIS DO PROJETO
+================================================================================
+Projeto: NutriFit
+Pacote base atual: br.edu.nutrifit
+Objetivo: Sistema web acadêmico para acompanhamento nutricional, treinos, agendamentos e hidratação.
+Tecnologias: Java 17, Spring Boot, Thymeleaf, Spring Data JPA, Maven, H2, MySQL, Lombok.
+Estado analisado: Projeto com configurações, models, enums, CSS/JS vazios, mas sem repositories, services, controllers e templates.
+
+================================================================================
+1. VISÃO GERAL DE FUNCIONAMENTO DO SISTEMA
+================================================================================
+* O NutriFit deve funcionar como uma aplicação web com páginas Thymeleaf.
+* O usuário acessa uma área pública para cadastro ou login.
+* Depois do login, o sistema salva o objeto Usuario na sessão com o nome "usuarioLogado".
+* Todas as telas privadas devem verificar se esse usuário está logado antes de listar, criar, editar, detalhar ou excluir dados.
+* A regra principal do projeto é que cada informação pertence ao usuário logado.
+* Portanto, refeições, planos alimentares, treinos, agendamentos e registros de hidratação não devem ser listados de forma global.
+* Os services sempre recebem o Usuario logado e chamam repositories que filtram por esse usuário.
+
+Fluxos Técnicos do Sistema:
+* Cadastro: GET /cadastro exibe formulário. POST /cadastro salva Usuario validado. Após salvar, redireciona para /login ou já inicia sessão.
+* Login: GET /login exibe formulário. POST /login chama AuthService.autenticar(email, senha). Se válido, salva usuarioLogado na HttpSession e redireciona para /dashboard.
+* Dashboard: GET /dashboard chama DashboardService.montarResumo(usuarioLogado), reunindo contadores, próximo agendamento e hidratação do dia.
+* CRUDs privados: Cada controller recupera usuarioLogado da sessão, chama o service correspondente e retorna templates Thymeleaf.
+* Plano alimentar: Além dos próprios campos, o formulário carrega refeições do usuário para selecionar quais entram no plano.
+* Hidratação: Permite registrar consumo diário. Um usuário não pode ter dois registros para a mesma data.
+* Logout: GET /logout invalida a sessão e redireciona para /login.
+
+================================================================================
+2. ESTADO ATUAL DO PROJETO ANALISADO
+================================================================================
+- Configuração Maven: pom.xml configurado com Spring Boot, JPA, Web MVC, Thymeleaf, H2, MySQL, Lombok e Validation. O que falta: Testar no ambiente local com "./mvnw clean test" e corrigir erros de dependência.
+- Perfis: application.properties, application-dev.properties e application-prod.properties existem. Dev usa H2; prod usa MySQL. O que falta: Confirmar banco MySQL, usuário/senha e usar update ou create conforme fase do projeto.
+- Model: Entidades Usuario, Refeicao, PlanoAlimentar, Treino, Agendamento e Hidratacao existem. Enums existem em model/enums. O que falta: Corrigir Usuario para inicializar dataCadastro e ativo automaticamente.
+- Repository: Pasta existe apenas com .gitkeep. O que falta: Criar interfaces JpaRepository para todas as entidades.
+- Service: Pasta existe apenas com .gitkeep. O que falta: Criar services com regras de negócio e validações não cobertas por anotações.
+- Controller: Pasta existe apenas com .gitkeep. O que falta: Criar controllers para auth, dashboard e CRUDs.
+- Templates: Pasta templates existe, mas sem páginas. O que falta: Criar login, cadastro, dashboard, fragments e telas de CRUD.
+- Static: CSS e JS existem, mas vazios. O que falta: Criar layout mínimo, navbar, cards, tabelas, formulários e alertas.
+- README: README inicial existe. O que falta: Atualizar no final com funcionalidades, instruções, perfis, prints e decisões técnicas.
+
+================================================================================
+3. ARQUITETURA FINAL ESPERADA
+================================================================================
+src/main/java/br/edu/nutrifit
+├── controller
+│   ├── AuthController.java
+│   ├── DashboardController.java
+│   ├── RefeicaoController.java
+│   ├── PlanoAlimentarController.java
+│   ├── TreinoController.java
+│   ├── AgendamentoController.java
+│   └── HidratacaoController.java
+├── dto
+│   └── DashboardResumoDTO.java
+├── model
+│   ├── Usuario.java
+│   ├── Refeicao.java
+│   ├── PlanoAlimentar.java
+│   ├── Treino.java
+│   ├── Agendamento.java
+│   ├── Hidratacao.java
+│   └── enums
+├── repository
+│   ├── UsuarioRepository.java
+│   ├── RefeicaoRepository.java
+│   ├── PlanoAlimentarRepository.java
+│   ├── TreinoRepository.java
+│   ├── AgendamentoRepository.java
+│   └── HidratacaoRepository.java
+└── service
+    ├── AuthService.java
+    ├── DashboardService.java
+    ├── UsuarioService.java
+    ├── RefeicaoService.java
+    ├── PlanoAlimentarService.java
+    ├── TreinoService.java
+    ├── AgendamentoService.java
+    └── HidratacaoService.java
+
+src/main/resources/templates
+├── login.html
+├── cadastro.html
+├── dashboard.html
+├── fragments
+│   ├── header.html
+│   ├── navbar.html
+│   ├── footer.html
+│   └── alerts.html
+├── refeicoes
+│   ├── listar.html
+│   ├── formulario.html
+│   └── detalhes.html
+├── planos
+│   ├── listar.html
+│   ├── formulario.html
+│   └── detalhes.html
+├── treinos
+│   ├── listar.html
+│   ├── formulario.html
+│   └── detalhes.html
+├── agendamentos
+│   ├── listar.html
+│   ├── formulario.html
+│   └── detalhes.html
+└── hidratacoes
+    ├── listar.html
+    ├── formulario.html
+    └── detalhes.html
+
+================================================================================
+4. ORDEM DE IMPLEMENTAÇÃO RECOMENDADA
+================================================================================
+Etapa 0: Ajuste inicial da model Usuario -> Corrigir dataCadastro e ativo para evitar registros nulos.
+Etapa 1: Repositories -> Criar interfaces de acesso ao banco para todas as entidades.
+Etapa 2: Auth e Usuario -> Criar cadastro, login, logout e controle simples de sessão.
+Etapa 3: Dashboard -> Montar resumo do usuário logado.
+Etapa 4: CRUD de Refeições -> Primeiro CRUD completo para servir de padrão aos demais.
+Etapa 5: CRUD de Planos Alimentares -> CRUD com seleção de refeições.
+Etapa 6: CRUD de Treinos -> CRUD simples com enum e validação numérica.
+Etapa 7: CRUD de Agendamentos -> CRUD com data/hora, tipo e status.
+Etapa 8: Funcionalidade extra: Hidratação -> Registro diário único por usuário e exibição no dashboard.
+Etapa 9: Layout, validações frontend e ajustes finais -> Padronizar fragments, mensagens, CSS e campos HTML.
+Etapa 10: README e apresentação -> Documentar execução, funcionalidades, arquitetura e prints.
+
+================================================================================
+5. AJUSTE INICIAL NECESSÁRIO NA MODEL USUARIO
+================================================================================
+Antes de implementar os fluxos, ajuste Usuario.java para não depender do controller ou service para preencher dataCadastro e ativo. Isso evita usuário salvo com campos nulos.
+Localização: src/main/java/br/edu/nutrifit/model/Usuario.java
+Ajuste: Importar jakarta.persistence.PrePersist, alterar dataCadastro para nullable=false/updatable=false, manter ativo nullable=false e criar o método prePersist().
+
+Código:
+@PrePersist
+public void prePersist() {
+    if (dataCadastro == null) {
+        dataCadastro = LocalDateTime.now();
+    }
+    if (ativo == null) {
+        ativo = true;
+    }
+}
+
+================================================================================
+6. CAMADA REPOSITORY
+================================================================================
+Os repositories devem ser interfaces simples que estendem JpaRepository. Eles são usados pelos services, nunca diretamente pelos templates.
+
+* UsuarioRepository.java (Estende JpaRepository<Usuario, Long>)
+  - Optional<Usuario> findByEmail(String email)
+  - boolean existsByEmail(String email)
+  - boolean existsByEmailAndIdNot(String email, Long id)
+* RefeicaoRepository.java (Estende JpaRepository<Refeicao, Long>)
+  - List<Refeicao> findByUsuarioOrderByNomeAsc(Usuario usuario)
+  - Optional<Refeicao> findByIdAndUsuario(Long id, Usuario usuario)
+  - long countByUsuario(Usuario usuario)
+* PlanoAlimentarRepository.java (Estende JpaRepository<PlanoAlimentar, Long>)
+  - List<PlanoAlimentar> findByUsuarioOrderByDataInicioDesc(Usuario usuario)
+  - Optional<PlanoAlimentar> findByIdAndUsuario(Long id, Usuario usuario)
+  - long countByUsuario(Usuario usuario)
+* TreinoRepository.java (Estende JpaRepository<Treino, Long>)
+  - List<Treino> findByUsuarioOrderByNomeAsc(Usuario usuario)
+  - Optional<Treino> findByIdAndUsuario(Long id, Usuario usuario)
+  - long countByUsuario(Usuario usuario)
+* AgendamentoRepository.java (Estende JpaRepository<Agendamento, Long>)
+  - List<Agendamento> findByUsuarioOrderByDataHoraAsc(Usuario usuario)
+  - Optional<Agendamento> findByIdAndUsuario(Long id, Usuario usuario)
+  - Optional<Agendamento> findTopByUsuarioAndStatusAndDataHoraAfterOrderByDataHoraAsc(Usuario usuario, EStatusAgendamento status, LocalDateTime dataHora)
+  - long countByUsuario(Usuario usuario)
+* HidratacaoRepository.java (Estende JpaRepository<Hidratacao, Long>)
+  - List<Hidratacao> findByUsuarioOrderByDataDesc(Usuario usuario)
+  - Optional<Hidratacao> findByIdAndUsuario(Long id, Usuario usuario)
+  - Optional<Hidratacao> findByUsuarioAndData(Usuario usuario, LocalDate data)
+  - boolean existsByUsuarioAndData(Usuario usuario, LocalDate data)
+  - boolean existsByUsuarioAndDataAndIdNot(Usuario usuario, LocalDate data, Long id)
+
+================================================================================
+7. CAMADA SERVICE
+================================================================================
+Os services concentram as regras de negócio. Controllers devem apenas receber a requisição, chamar o service e devolver o nome da view ou redirect.
+
+UsuarioService.java (Dependência: UsuarioRepository)
+- listarTodos(): Retorna todos os usuários (se a tela administrativa for usada).
+- buscarPorId(Long id): Busca usuário por id ou lança exceção simples se não encontrar.
+- buscarPorEmail(String email): Usado pelo AuthService.
+- cadastrar(Usuario usuario): Valida e-mail duplicado, garante ativo=true e salva.
+- atualizar(Usuario usuario): Valida e-mail duplicado ignorando o próprio id e salva alterações.
+- desativar(Long id): Define ativo=false, em vez de excluir fisicamente usuário com dados vinculados.
+- validarEmailDisponivel(Usuario usuario): Método privado para centralizar a regra de e-mail único.
+
+AuthService.java (Dependência: UsuarioService ou UsuarioRepository)
+- autenticar(String email, String senha): Busca usuário ativo por e-mail e compara senha (texto puro no MVP).
+- usuarioPodeLogar(Usuario usuario): Confere se usuário existe e está ativo.
+- validarSenha(String senhaDigitada, String senhaSalva): Isola a comparação de senha para facilitar hash depois.
+
+DashboardService.java (Dependências: RefeicaoRepository, PlanoAlimentarRepository, TreinoRepository, AgendamentoRepository, HidratacaoRepository)
+- montarResumo(Usuario usuario): Monta DashboardResumoDTO com dados do usuário logado.
+- buscarProximoAgendamento(Usuario usuario): Busca próximo agendamento AGENDADO com data/hora futura.
+- buscarHidratacaoHoje(Usuario usuario): Busca registro de hidratação da data atual.
+
+RefeicaoService.java (Dependência: RefeicaoRepository)
+- listarPorUsuario(Usuario usuario): Lista somente refeições do usuário logado.
+- buscarPorIdEUsuario(Long id, Usuario usuario): Busca refeição apenas se pertencer ao usuário.
+- salvar(Refeicao refeicao, Usuario usuario): Define o usuário logado na refeição e salva.
+- excluir(Long id, Usuario usuario): Busca por id e usuário; exclui somente se pertencer ao usuário.
+- calcularTotalCalorias(List<Refeicao> refeicoes): Soma calorias para detalhes de plano ou dashboard.
+
+PlanoAlimentarService.java (Dependências: PlanoAlimentarRepository, RefeicaoRepository)
+- listarPorUsuario(Usuario usuario): Lista planos do usuário logado.
+- buscarPorIdEUsuario(Long id, Usuario usuario): Busca plano apenas se pertencer ao usuário.
+- salvar(PlanoAlimentar plano, Usuario usuario, List<Long> refeicoesIds): Define usuário, valida datas, carrega refeições do próprio usuário e salva.
+- excluir(Long id, Usuario usuario): Exclui plano do usuário logado.
+- validarDatas(PlanoAlimentar plano): Impede dataFim anterior à dataInicio.
+- carregarRefeicoesDoUsuario(List<Long> ids, Usuario usuario): Garante que o plano não receba refeições de outro usuário.
+
+TreinoService.java (Dependência: TreinoRepository)
+- listarPorUsuario(Usuario usuario): Lista treinos do usuário logado.
+- buscarPorIdEUsuario(Long id, Usuario usuario): Busca treino apenas se pertencer ao usuário.
+- salvar(Treino treino, Usuario usuario): Define usuário e salva.
+- excluir(Long id, Usuario usuario): Exclui treino do usuário.
+- validarTreino(Treino treino): Regra opcional para validar duração e frequência além das anotações.
+
+AgendamentoService.java (Dependência: AgendamentoRepository)
+- listarPorUsuario(Usuario usuario): Lista agendamentos do usuário logado.
+- buscarPorIdEUsuario(Long id, Usuario usuario): Busca agendamento apenas se pertencer ao usuário.
+- salvar(Agendamento agendamento, Usuario usuario): Define usuário, define status padrão se vazio, valida data futura e salva.
+- excluir(Long id, Usuario usuario): Exclui agendamento do usuário.
+- cancelar(Long id, Usuario usuario): Altera status para CANCELADO.
+- concluir(Long id, Usuario usuario): Altera status para CONCLUIDO.
+- validarDataFutura(Agendamento agendamento): Impede criação de novo agendamento no passado.
+
+HidratacaoService.java (Dependência: HidratacaoRepository)
+- listarPorUsuario(Usuario usuario): Lista histórico de hidratação.
+- buscarPorIdEUsuario(Long id, Usuario usuario): Busca hidratação apenas se pertencer ao usuário.
+- buscarPorData(Usuario usuario, LocalDate data): Busca registro de uma data específica.
+- buscarHoje(Usuario usuario): Busca registro da data atual.
+- salvar(Hidratacao hidratacao, Usuario usuario): Define usuário e valida duplicidade usuario+data.
+- registrarConsumoHoje(Usuario usuario, Integer consumidoMl, Integer metaMl): Cria ou atualiza o registro do dia.
+- excluir(Long id, Usuario usuario): Exclui registro do usuário.
+- validarRegistroUnicoPorData(Hidratacao hidratacao, Usuario usuario): Impede duplicidade de hidratação na mesma data.
+
+================================================================================
+8. DTO RECOMENDADO PARA DASHBOARD
+================================================================================
+O DTO ajuda o dashboard reunindo dados agregados de várias entidades em uma única classe para a tela.
+Arquivo: src/main/java/br/edu/nutrifit/dto/DashboardResumoDTO.java
+Campos:
+- String nomeUsuario
+- Double peso
+- Double altura
+- EObjetivoUsuario objetivoUsuario
+- long totalRefeicoes
+- long totalPlanosAlimentares
+- long totalTreinos
+- Agendamento proximoAgendamento
+- Hidratacao hidratacaoHoje
+- double percentualHidratacao
+- int restanteHidratacaoMl
+
+================================================================================
+9. CAMADA CONTROLLER E ROTAS
+================================================================================
+Retornam templates Thymeleaf (MVC tradicional) e usam RedirectAttributes para feedback visual.
+
+AuthController.java:
+  - GET /login (mostrarLogin): Exibe login.html.
+  - POST /login (entrar): Autentica e salva usuarioLogado na sessão.
+  - GET /cadastro (mostrarCadastro): Exibe cadastro.html com novo Usuario.
+  - POST /cadastro (cadastrar): Salva usuário validado (@Valid) e redireciona.
+  - GET /logout (sair): Invalida a sessão do usuário.
+
+DashboardController.java:
+  - GET /dashboard (mostrarDashboard): Carrega o DashboardResumoDTO.
+
+RefeicaoController.java:
+  - GET /refeicoes (listar): Lista refeições do usuário logado.
+  - GET /refeicoes/novo (novo): Abre formulário vazio.
+  - POST /refeicoes/salvar (salvar): Valida e salva a refeição.
+  - GET /refeicoes/editar/{id} (editar): Abre formulário preenchido da refeição.
+  - GET /refeicoes/detalhes/{id} (detalhes): Exibe detalhes específicos da refeição.
+  - POST /refeicoes/excluir/{id} (excluir): Exclui o registro informado.
+
+PlanoAlimentarController.java:
+  - GET /planos (listar): Lista planos.
+  - GET /planos/novo (novo): Abre formulário e carrega refeições disponíveis.
+  - POST /planos/salvar (salvar): Salva plano com refeições selecionadas.
+  - GET /planos/editar/{id} (editar): Edita plano e recarrega refeições.
+  - GET /planos/detalhes/{id} (detalhes): Exibe plano com refeições vinculadas.
+  - POST /planos/excluir/{id} (excluir): Exclui plano.
+
+TreinoController.java:
+  - GET /treinos (listar): Lista treinos.
+  - GET /treinos/novo (novo): Abre formulário de treino.
+  - POST /treinos/salvar (salvar): Valida e salva o treino.
+  - GET /treinos/editar/{id} (editar): Edita dados do treino.
+  - GET /treinos/detalhes/{id} (detalhes): Exibe detalhes do treino.
+  - POST /treinos/excluir/{id} (excluir): Exclui treino.
+
+AgendamentoController.java:
+  - GET /agendamentos (listar): Lista agendamentos do usuário.
+  - GET /agendamentos/novo (novo): Abre formulário de agendamento.
+  - POST /agendamentos/salvar (salvar): Valida a data e salva agendamento.
+  - GET /agendamentos/editar/{id} (editar): Edita agendamento existente.
+  - GET /agendamentos/detalhes/{id} (detalhes): Exibe detalhes do agendamento.
+  - POST /agendamentos/cancelar/{id} (cancelar): Muda status do agendamento para CANCELADO.
+  - POST /agendamentos/concluir/{id} (concluir): Muda status do agendamento para CONCLUIDO.
+  - POST /agendamentos/excluir/{id} (excluir): Exclui agendamento.
+
+HidratacaoController.java:
+  - GET /hidratacoes (listar): Lista histórico de hidratação.
+  - GET /hidratacoes/novo (novo): Abre formulário de hidratação.
+  - POST /hidratacoes/salvar (salvar): Valida duplicidade da data e salva.
+  - GET /hidratacoes/editar/{id} (editar): Edita registro de consumo.
+  - GET /hidratacoes/detalhes/{id} (detalhes): Exibe detalhes e status da hidratação.
+  - POST /hidratacoes/registrar-hoje (registrarHoje): Atalho rápido para atualizar o consumo do dia atual.
+  - POST /hidratacoes/excluir/{id} (excluir): Exclui registro de hidratação.
+
+================================================================================
+10. TEMPLATES THYMELEAF E CAMPOS DOS FORMULÁRIOS
+================================================================================
+Cada formulário deve usar th:object, th:field e exibir erros de BindingResult. No HTML, use restrições nativas como required, min, max, maxlength e tipos corretos de inputs.
+
+- login.html: Campos email, senha. Formulário simples POST /login. Mostrar erro de login inválido.
+- cadastro.html: Campos nome, email, senha, peso, altura, objetivo (select com EObjetivoUsuario).
+- dashboard.html: Não é formulário. Exibe cards resumidos (dados do usuário, totais, próximo agendamento, hidratação de hoje).
+- fragments/header.html: Links CSS comuns (css/styles.css) e metadados.
+- fragments/navbar.html: Navegação para Dashboard, Refeições, Planos, Treinos, Agendamentos, Hidratação e Sair.
+- fragments/alerts.html: Captura e exibe mensagemSucesso e mensagemErro via RedirectAttributes.
+- refeicoes/formulario.html: Campos id, nome, descricao, tipoRefeicao (select), calorias, proteinas, carboidratos, gorduras, horarioSugerido. Números com min=0.
+- refeicoes/listar.html: Tabela com colunas: nome, tipo, calorias, horário sugerido, ações.
+- refeicoes/detalhes.html: Visualização completa dos macronutrientes e descrição.
+- planos/formulario.html: Campos id, nome, descricao, metaCaloriasDiarias, dataInicio, dataFim, refeicoesIds (Checkboxes/multiselect com refeições do usuário).
+- planos/listar.html: Tabela com colunas: nome, meta calórica, data início, data fim, ações.
+- planos/detalhes.html: Exibe plano, refeições associadas e total calórico.
+- treinos/formulario.html: Campos id, nome, descricao, tipoTreino (select), nivel (select), duracaoMinutos, frequenciaSemanal (min=1 max=7).
+- treinos/listar.html: Tabela com colunas: nome, tipo, nível, duração, frequência, ações.
+- agendamentos/formulario.html: Campos id, titulo, descricao, dataHora (type=datetime-local), tipoAgendamento, status (oculto ou select).
+- agendamentos/listar.html: Tabela com colunas: título, data/hora, tipo, status, ações.
+- hidratacoes/formulario.html: Campos id, data (type=date), metaMl (min=500 max=10000), consumidoMl (min=0 max=15000).
+- hidratacoes/listar.html: Tabela com colunas: data, meta, consumido, percentual, restante, status, ações.
+- hidratacoes/detalhes.html: Visualização de percentual, restante e status visual do consumo.
+
+================================================================================
+11. VALIDAÇÕES E REGRAS DE NEGÓCIO
+================================================================================
+* Usuario: Na model (nome obrigatório, email válido, senha mínima, peso/altura nos limites). No Service (e-mail único global; usuários desativados impedidos de logar).
+* Refeicao: Na model (nome, tipo, nutrientes obrigatórios; calorias e macros >= 0).
+* PlanoAlimentar: No Service (dataFim não pode ser menor que dataInicio; refeições incluídas devem ser obrigatoriamente do próprio usuário logado).
+* Treino: Na model (nome, tipo, nível, duração e frequência semanal válidos).
+* Agendamento: No Service (bloquear criação de novos agendamentos no passado; status inicial padrão AGENDADO).
+* Hidratacao: No Service / Banco (combinação usuario + data deve ser única; valores de consumo e metas dentro dos limites informados).
+* Telas (HTML): Atributos required, minlength, maxlength, min, max, tipos corretos de inputs.
+
+================================================================================
+12. CONTROLE DE SESSÃO MANUAL (SEM SPRING SECURITY)
+================================================================================
+Para manter o MVP enxuto, utiliza-se HttpSession. Após autenticar com sucesso, salve o usuário na sessão:
+session.setAttribute("usuarioLogado", usuario);
+
+Em cada controller privado, recupere e valide obrigatoriamente a sessão ativa:
+Usuario usuarioLogado = (Usuario) session.getAttribute("usuarioLogado");
+if (usuarioLogado == null) {
+    return "redirect:/login";
+}
+
+Regra Crucial de Segurança: Nunca busque, edite ou exclua registros utilizando apenas o id da entidade de forma isolada. Use sempre consultas compostas filtrando pelo usuário da sessão (ex: buscarPorIdEUsuario(id, usuarioLogado)).
+
+================================================================================
+13. CAMINHO DE IMPLEMENTAÇÃO E ROTEIRO DE TESTES
+================================================================================
+Validação de Fluxos por Funcionalidade:
+1. Cadastro/Login: UsuarioRepository, UsuarioService, AuthService, AuthController. Validar fluxos de cadastro, e-mail duplicado, login válido/inválido e logout.
+2. Dashboard: DashboardResumoDTO, DashboardService, DashboardController. Testar comportamento visual para usuários novos (sem dados) e antigos.
+3. Refeições: CRUD completo. Testar as ações de criar, listar, editar, detalhar e excluir.
+4. Planos alimentares: Relacionamento N:N. Testar planos vazios, com refeições e regras de validação de data final inválida.
+5. Treinos: CRUD simples. Validar enums, durações e limites de frequência semanal.
+6. Agendamentos: Controle de status. Testar bloqueio de datas passadas, cancelamentos e conclusões.
+7. Hidratação: Recurso extra. Testar bloqueio de duplicidade para a mesma data, cálculos percentuais e integração no dashboard.
+8. Layout final: Uniformização visual com fragments e CSS/JS mínimos. Testar responsividade e fluxos de navegação.
+
+Testes Manuais Básicos:
+* Inicialização: Executar "./mvnw clean test; ./mvnw spring-boot:run". O sistema deve iniciar no perfil dev e disponibilizar o console do H2.
+* Segurança de Sessão: Tentar acessar diretamente /dashboard sem estar logado. O sistema deve redirecionar forçadamente para /login.
+
+================================================================================
+14. CAMPOS FINAIS DAS ENTIDADES
+================================================================================
+* Usuario: id, nome, email, senha, peso, altura, objetivo, dataCadastro, ativo.
+* Refeicao: id, nome, descricao, tipoRefeicao, calorias, proteinas, carboidratos, gorduras, horarioSugerido, usuario.
+* PlanoAlimentar: id, nome, descricao, metaCaloriasDiarias, dataInicio, dataFim, usuario, refeicoes.
+* Treino: id, nome, descricao, tipoTreino, nivel, duracaoMinutos, frequenciaSemanal, usuario.
+* Agendamento: id, titulo, descricao, dataHora, tipoAgendamento, status, usuario.
+* Hidratacao: id, data, metaMl, consumidoMl, usuario.
+
+================================================================================
+15. COMANDOS DE DIAGNÓSTICO (LINUX / TERMINAL)
+================================================================================
+Caso precise analisar a integridade do ambiente e coletar logs, rode o bloco em lote:
+pwd && find src/main/java -type f | sort && find src/main/resources -type f | sort && java -version && ./mvnw -version && ./mvnw clean test && ./mvnw spring-boot:run
+
+================================================================================
+16. SUGESTÃO DE PADRÃO PARA COMMITS
+================================================================================
+* fix: inicialização automática dos campos do usuário
+* feat: criação dos repositories do NutriFit
+* feat: implementação de cadastro e login de usuários
+* feat: criação do dashboard inicial
+* feat: implementação do CRUD de refeições
+* feat: implementação do CRUD de planos alimentares
+* feat: implementação do CRUD de treinos
+* feat: implementação do CRUD de agendamentos
+* feat: implementação do acompanhamento de hidratação
+* style: ajustes no layout das páginas
+* docs: atualização do README do projeto
+
+================================================================================
+17. CHECKLIST DE ENTREGA (README E DEFINIÇÃO DE PRONTO)
+================================================================================
+Conteúdos obrigatórios no README:
+- Descrição clara e concisa do ecossistema NutriFit.
+- Identificação dos integrantes desenvolvedores: João Pedro Carneiro da Fonseca e Gabriel Leão.
+- Relação completa de tecnologias aplicadas.
+- Instruções passo a passo para rodar localmente em ambiente Dev (H2).
+- Instruções de configuração para o perfil de produção com banco MySQL.
+- Lista detalhada de recursos implementados e da funcionalidade extra (Hidratação).
+- Explicação sucinta da arquitetura em camadas estruturada no projeto.
+- Capturas de tela (prints) das principais interfaces funcionais.
+- Notas técnicas relevantes sobre os critérios de validação e persistência adotados.
+
+Definição de Pronto (DoD) do MVP:
+- Autenticação e cadastro operacionais.
+- Sessão HTTP ativa interceptando e resguardando endpoints restritos.
+- Painel Dashboard renderizando dados analíticos consolidados.
+- CRUDs completos, consistentes e isolados por usuário logado (Refeições, Planos Alimentares, Treinos e Agendamentos).
+- Controle de hidratação diária com trava de unicidade por data.
+- Camadas de validação ativas no Backend (javax.validation) e Frontend (HTML5).
+- Persistência configurada para H2 (Dev) e MySQL (Prod).
+- Interfaces em Thymeleaf com sistema de navegação e alertas operacionais.
+- README conclusivo contendo evidências visuais do sistema rodando.
