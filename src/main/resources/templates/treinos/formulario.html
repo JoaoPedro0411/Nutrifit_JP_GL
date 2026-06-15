@@ -1,52 +1,67 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::main})}">
 <head>
-    <meta charset="UTF-8">
-    <title>Treino</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <title>Treino - NutriFit</title>
 </head>
 <body>
 <main class="page-content">
     <section class="form-container">
         <div class="form-title">
-            <h1 th:text="${treino.id == null} ? 'Novo Treino' : 'Editar Treino'"></h1>
+            <h1 th:text="${treino.id == null} ? 'Novo Treino' : 'Editar Treino'">Treino</h1>
+            <p>Preencha os dados do treino.</p>
         </div>
 
         <form th:action="@{/treinos/salvar}" th:object="${treino}" method="post">
             <input type="hidden" th:field="*{id}">
 
-            <div>
-                <label>Nome</label>
-                <input type="text" th:field="*{nome}" required maxlength="80">
+            <div class="form-group">
+                <label for="nome">Nome</label>
+                <input id="nome" class="form-input" type="text" th:field="*{nome}" maxlength="80" required>
+                <small class="field-error" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></small>
             </div>
 
-            <div>
-                <label>Descrição</label>
-                <textarea th:field="*{descricao}" maxlength="500"></textarea>
+            <div class="form-group">
+                <label for="descricao">Descrição</label>
+                <textarea id="descricao" class="form-input" th:field="*{descricao}" maxlength="500"></textarea>
+                <small class="field-error" th:if="${#fields.hasErrors('descricao')}" th:errors="*{descricao}"></small>
             </div>
 
-            <div>
-                <label>Tipo</label>
-                <select th:field="*{tipoTreino}" required>
-                    <option th:each="t : ${T(br.edu.nutrifit.model.enums.ETipoTreino).values()}" th:value="${t}" th:text="${t}"></option>
+            <div class="form-group">
+                <label for="tipoTreino">Tipo</label>
+                <select id="tipoTreino" class="form-input" th:field="*{tipoTreino}" required>
+                    <option value="">Selecione</option>
+                    <option th:each="tipo : ${T(br.edu.nutrifit.model.enums.ETipoTreino).values()}"
+                            th:value="${tipo}"
+                            th:text="${tipo}">
+                    </option>
                 </select>
+                <small class="field-error" th:if="${#fields.hasErrors('tipoTreino')}" th:errors="*{tipoTreino}"></small>
             </div>
 
-            <div>
-                <label>Nível</label>
-                <select th:field="*{nivel}" required>
-                    <option th:each="n : ${T(br.edu.nutrifit.model.enums.ENivelTreino).values()}" th:value="${n}" th:text="${n}"></option>
+            <div class="form-group">
+                <label for="nivel">Nível</label>
+                <select id="nivel" class="form-input" th:field="*{nivel}" required>
+                    <option value="">Selecione</option>
+                    <option th:each="nivel : ${T(br.edu.nutrifit.model.enums.ENivelTreino).values()}"
+                            th:value="${nivel}"
+                            th:text="${nivel}">
+                    </option>
                 </select>
+                <small class="field-error" th:if="${#fields.hasErrors('nivel')}" th:errors="*{nivel}"></small>
             </div>
 
-            <div>
-                <label>Duração (min)</label>
-                <input type="number" th:field="*{duracaoMinutos}" min="1" required>
+            <div class="form-group">
+                <label for="duracaoMinutos">Duração em minutos</label>
+                <input id="duracaoMinutos" class="form-input" type="number" th:field="*{duracaoMinutos}" min="1" required>
+                <small class="field-error" th:if="${#fields.hasErrors('duracaoMinutos')}" th:errors="*{duracaoMinutos}"></small>
             </div>
 
-            <div>
-                <label>Frequência Semanal</label>
-                <input type="number" th:field="*{frequenciaSemanal}" min="1" max="7" required>
+            <div class="form-group">
+                <label for="frequenciaSemanal">Frequência semanal</label>
+                <input id="frequenciaSemanal" class="form-input" type="number" th:field="*{frequenciaSemanal}" min="1" max="7" required>
+                <small class="field-error" th:if="${#fields.hasErrors('frequenciaSemanal')}" th:errors="*{frequenciaSemanal}"></small>
             </div>
 
             <div class="form-actions">

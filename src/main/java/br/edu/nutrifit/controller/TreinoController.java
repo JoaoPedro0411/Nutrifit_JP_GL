@@ -2,77 +2,94 @@ package br.edu.nutrifit.controller;
 
 import br.edu.nutrifit.model.Treino;
 import br.edu.nutrifit.model.Usuario;
+import br.edu.nutrifit.repository.UsuarioRepository;
 import br.edu.nutrifit.service.TreinoService;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
 @Controller
+@RequestMapping("/treinos")
 public class TreinoController {
 
-    private final TreinoService service;
+    private final TreinoService treinoService;
+    private final UsuarioRepository usuarioRepository;
 
-    public TreinoController(TreinoService service) {
-        this.service = service;
+    public TreinoController(TreinoService treinoService, UsuarioRepository usuarioRepository) {
+        this.treinoService = treinoService;
+        this.usuarioRepository = usuarioRepository;
     }
 
-    @GetMapping("/treinos")
-    public String listar(HttpSession session, Model model) {
-        Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
-        if (usuario == null) return "redirect:/login";
-        List<Treino> lista = service.listarPorUsuario(usuario);
-        model.addAttribute("treinos", lista);
+    @GetMapping
+    public String listar(Model model, Authentication authentication) {
+        Usuario usuario = buscarUsuarioLogado(authentication);
+        List<Treino> treinos = treinoService.listarPorUsuario(usuario);
+
+        model.addAttribute("treinos", treinos);
+
         return "treinos/listar";
     }
 
-    @GetMapping("/treinos/novo")
-    public String novo(HttpSession session, Model model) {
-        Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
-        if (usuario == null) return "redirect:/login";
+    @GetMapping("/novo")
+    public String novo(Model model) {
         model.addAttribute("treino", new Treino());
         return "treinos/formulario";
     }
 
-    @PostMapping("/treinos/salvar")
-    public String salvar(@Valid Treino treino, BindingResult result, HttpSession session) {
-        Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
-        if (usuario == null) return "redirect:/login";
-        if (result.hasErrors()) return "treinos/formulario";
-        service.salvar(treino, usuario);
+    @PostMapping("/salvar")
+    public String salvar(@Valid Treino treino,
+                         BindingResult resultado,
+                         Authentication authentication) {
+
+        if (resultado.hasErrors()) {
+            return "treinos/formulario";
+        }
+
+        Usuario usuario = buscarUsuarioLogado(authentication);
+        treinoService.salvar(treino, usuario);
+
         return "redirect:/treinos";
     }
 
-    @GetMapping("/treinos/editar/{id}")
-    public String editar(@PathVariable Long id, HttpSession session, Model model) {
-        Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
-        if (usuario == null) return "redirect:/login";
-        Treino t = service.buscarPorIdEUsuario(id, usuario);
-        model.addAttribute("treino", t);
-        return "treinos/formulario";
-    }
+    @GetMapping("/detalhes/{id}")
+    public String detalhes(@PathVariable Long id, Model model, Authentication authentication) {
+        Usuario usuario = buscarUsuarioLogado(authentication);
+        Treino treino = treinoService.buscarPorIdEUsuario(id, usuario);
 
-    @GetMapping("/treinos/detalhes/{id}")
-    public String detalhes(@PathVariable Long id, HttpSession session, Model model) {
-        Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
-        if (usuario == null) return "redirect:/login";
-        Treino t = service.buscarPorIdEUsuario(id, usuario);
-        model.addAttribute("treino", t);
+        model.addAttribute("treino", treino);
+
         return "treinos/detalhes";
     }
 
-    @PostMapping("/treinos/excluir/{id}")
-    public String excluir(@PathVariable Long id, HttpSession session) {
-        Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
-        if (usuario == null) return "redirect:/login";
-        service.excluir(id, usuario);
+    @GetMapping("/editar/{id}")
+    public String editar(@PathVariable Long id, Model model, Authentication authentication) {
+        Usuario usuario = buscarUsuarioLogado(authentication);
+        Treino treino = treinoService.buscarPorIdEUsuario(id, usuario);
+
+        model.addAttribute("treino", treino);
+
+        return "treinos/formulario";
+    }
+
+    @PostMapping("/excluir/{id}")
+    public String excluir(@PathVariable Long id, Authentication authentication) {
+        Usuario usuario = buscarUsuarioLogado(authentication);
+        treinoService.excluir(id, usuario);
+
         return "redirect:/treinos";
     }
 
+    private Usuario buscarUsuarioLogado(Authentication authentication) {
+        String email = authentication.getName();
+        return usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuário logado não encontrado."));
+    }
 }

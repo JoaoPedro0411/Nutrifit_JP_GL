@@ -1,55 +1,72 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::main})}">
 <head>
-    <meta charset="UTF-8">
-    <title>Refeição</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <title>Refeição - NutriFit</title>
 </head>
 <body>
 <main class="page-content">
     <section class="form-container">
         <div class="form-title">
-            <h1 th:text="${refeicao.id == null} ? 'Nova Refeição' : 'Editar Refeição'"></h1>
+            <h1 th:text="${refeicao.id == null} ? 'Nova Refeição' : 'Editar Refeição'">Refeição</h1>
+            <p>Preencha os dados da refeição.</p>
         </div>
 
         <form th:action="@{/refeicoes/salvar}" th:object="${refeicao}" method="post">
             <input type="hidden" th:field="*{id}">
 
-            <div>
-                <label>Nome</label>
-                <input type="text" th:field="*{nome}" required maxlength="80">
+            <div class="form-group">
+                <label for="nome">Nome</label>
+                <input id="nome" class="form-input" type="text" th:field="*{nome}" maxlength="80" required>
+                <small class="field-error" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></small>
             </div>
 
-            <div>
-                <label>Descrição</label>
-                <textarea th:field="*{descricao}" maxlength="500"></textarea>
+            <div class="form-group">
+                <label for="descricao">Descrição</label>
+                <textarea id="descricao" class="form-input" th:field="*{descricao}" maxlength="500"></textarea>
+                <small class="field-error" th:if="${#fields.hasErrors('descricao')}" th:errors="*{descricao}"></small>
             </div>
 
-            <div>
-                <label>Tipo</label>
-                <select th:field="*{tipoRefeicao}" required>
-                    <option th:each="t : ${T(br.edu.nutrifit.model.enums.ETipoRefeicao).values()}" th:value="${t}" th:text="${t}"></option>
+            <div class="form-group">
+                <label for="tipoRefeicao">Tipo</label>
+                <select id="tipoRefeicao" class="form-input" th:field="*{tipoRefeicao}" required>
+                    <option value="">Selecione</option>
+                    <option th:each="tipo : ${T(br.edu.nutrifit.model.enums.ETipoRefeicao).values()}"
+                            th:value="${tipo}"
+                            th:text="${tipo}">
+                    </option>
                 </select>
+                <small class="field-error" th:if="${#fields.hasErrors('tipoRefeicao')}" th:errors="*{tipoRefeicao}"></small>
             </div>
 
-            <div>
-                <label>Calorias</label>
-                <input type="number" th:field="*{calorias}" min="0" required>
+            <div class="form-group">
+                <label for="calorias">Calorias</label>
+                <input id="calorias" class="form-input" type="number" th:field="*{calorias}" min="0" required>
+                <small class="field-error" th:if="${#fields.hasErrors('calorias')}" th:errors="*{calorias}"></small>
             </div>
 
-            <div>
-                <label>Proteínas (g)</label>
-                <input type="number" step="0.1" th:field="*{proteinas}" min="0" required>
+            <div class="form-group">
+                <label for="proteinas">Proteínas (g)</label>
+                <input id="proteinas" class="form-input" type="number" step="0.1" th:field="*{proteinas}" min="0" required>
+                <small class="field-error" th:if="${#fields.hasErrors('proteinas')}" th:errors="*{proteinas}"></small>
             </div>
 
-            <div>
-                <label>Carboidratos (g)</label>
-                <input type="number" step="0.1" th:field="*{carboidratos}" min="0" required>
+            <div class="form-group">
+                <label for="carboidratos">Carboidratos (g)</label>
+                <input id="carboidratos" class="form-input" type="number" step="0.1" th:field="*{carboidratos}" min="0" required>
+                <small class="field-error" th:if="${#fields.hasErrors('carboidratos')}" th:errors="*{carboidratos}"></small>
             </div>
 
-            <div>
-                <label>Gorduras (g)</label>
-                <input type="number" step="0.1" th:field="*{gorduras}" min="0" required>
+            <div class="form-group">
+                <label for="gorduras">Gorduras (g)</label>
+                <input id="gorduras" class="form-input" type="number" step="0.1" th:field="*{gorduras}" min="0" required>
+                <small class="field-error" th:if="${#fields.hasErrors('gorduras')}" th:errors="*{gorduras}"></small>
+            </div>
+
+            <div class="form-group">
+                <label for="horarioSugerido">Horário sugerido</label>
+                <input id="horarioSugerido" class="form-input" type="time" th:field="*{horarioSugerido}">
             </div>
 
             <div class="form-actions">

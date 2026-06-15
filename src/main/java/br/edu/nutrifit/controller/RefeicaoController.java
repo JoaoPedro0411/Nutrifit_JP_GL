@@ -2,77 +2,95 @@ package br.edu.nutrifit.controller;
 
 import br.edu.nutrifit.model.Refeicao;
 import br.edu.nutrifit.model.Usuario;
+import br.edu.nutrifit.repository.UsuarioRepository;
 import br.edu.nutrifit.service.RefeicaoService;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
 @Controller
+@RequestMapping("/refeicoes")
 public class RefeicaoController {
 
-    private final RefeicaoService service;
+    private final RefeicaoService refeicaoService;
+    private final UsuarioRepository usuarioRepository;
 
-    public RefeicaoController(RefeicaoService service) {
-        this.service = service;
+    public RefeicaoController(RefeicaoService refeicaoService, UsuarioRepository usuarioRepository) {
+        this.refeicaoService = refeicaoService;
+        this.usuarioRepository = usuarioRepository;
     }
 
-    @GetMapping("/refeicoes")
-    public String listar(HttpSession session, Model model) {
-        Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
-        if (usuario == null) return "redirect:/login";
-        List<Refeicao> lista = service.listarPorUsuario(usuario);
-        model.addAttribute("refeicoes", lista);
+    @GetMapping
+    public String listar(Model model, Authentication authentication) {
+        Usuario usuario = buscarUsuarioLogado(authentication);
+        List<Refeicao> refeicoes = refeicaoService.listarPorUsuario(usuario);
+
+        model.addAttribute("refeicoes", refeicoes);
+        model.addAttribute("totalCalorias", refeicaoService.calcularTotalCalorias(refeicoes));
+
         return "refeicoes/listar";
     }
 
-    @GetMapping("/refeicoes/novo")
-    public String novo(HttpSession session, Model model) {
-        Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
-        if (usuario == null) return "redirect:/login";
+    @GetMapping("/novo")
+    public String novo(Model model) {
         model.addAttribute("refeicao", new Refeicao());
         return "refeicoes/formulario";
     }
 
-    @PostMapping("/refeicoes/salvar")
-    public String salvar(@Valid Refeicao refeicao, BindingResult result, HttpSession session) {
-        Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
-        if (usuario == null) return "redirect:/login";
-        if (result.hasErrors()) return "refeicoes/formulario";
-        service.salvar(refeicao, usuario);
+    @PostMapping("/salvar")
+    public String salvar(@Valid Refeicao refeicao,
+                         BindingResult resultado,
+                         Authentication authentication) {
+
+        if (resultado.hasErrors()) {
+            return "refeicoes/formulario";
+        }
+
+        Usuario usuario = buscarUsuarioLogado(authentication);
+        refeicaoService.salvar(refeicao, usuario);
+
         return "redirect:/refeicoes";
     }
 
-    @GetMapping("/refeicoes/editar/{id}")
-    public String editar(@PathVariable Long id, HttpSession session, Model model) {
-        Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
-        if (usuario == null) return "redirect:/login";
-        Refeicao r = service.buscarPorIdEUsuario(id, usuario);
-        model.addAttribute("refeicao", r);
-        return "refeicoes/formulario";
-    }
+    @GetMapping("/detalhes/{id}")
+    public String detalhes(@PathVariable Long id, Model model, Authentication authentication) {
+        Usuario usuario = buscarUsuarioLogado(authentication);
+        Refeicao refeicao = refeicaoService.buscarPorIdEUsuario(id, usuario);
 
-    @GetMapping("/refeicoes/detalhes/{id}")
-    public String detalhes(@PathVariable Long id, HttpSession session, Model model) {
-        Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
-        if (usuario == null) return "redirect:/login";
-        Refeicao r = service.buscarPorIdEUsuario(id, usuario);
-        model.addAttribute("refeicao", r);
+        model.addAttribute("refeicao", refeicao);
+
         return "refeicoes/detalhes";
     }
 
-    @PostMapping("/refeicoes/excluir/{id}")
-    public String excluir(@PathVariable Long id, HttpSession session) {
-        Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
-        if (usuario == null) return "redirect:/login";
-        service.excluir(id, usuario);
+    @GetMapping("/editar/{id}")
+    public String editar(@PathVariable Long id, Model model, Authentication authentication) {
+        Usuario usuario = buscarUsuarioLogado(authentication);
+        Refeicao refeicao = refeicaoService.buscarPorIdEUsuario(id, usuario);
+
+        model.addAttribute("refeicao", refeicao);
+
+        return "refeicoes/formulario";
+    }
+
+    @PostMapping("/excluir/{id}")
+    public String excluir(@PathVariable Long id, Authentication authentication) {
+        Usuario usuario = buscarUsuarioLogado(authentication);
+        refeicaoService.excluir(id, usuario);
+
         return "redirect:/refeicoes";
     }
 
+    private Usuario buscarUsuarioLogado(Authentication authentication) {
+        String email = authentication.getName();
+        return usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuário logado não encontrado."));
+    }
 }

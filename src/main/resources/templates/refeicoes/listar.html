@@ -1,37 +1,56 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::main})}">
 <head>
-    <meta charset="UTF-8">
-    <title>Refeições</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <title>Refeições - NutriFit</title>
 </head>
 <body>
 <main class="page-content">
     <section class="list-container">
         <div class="form-title">
             <h1>Refeições</h1>
+            <p>Controle as refeições cadastradas e acompanhe as calorias.</p>
+        </div>
+
+        <div class="dashboard-action">
             <a th:href="@{/refeicoes/novo}">Nova Refeição</a>
         </div>
 
-        <table>
+        <div class="summary-card">
+            <strong>Total de calorias cadastradas:</strong>
+            <span th:text="${totalCalorias}">0</span> kcal
+        </div>
+
+        <div th:if="${#lists.isEmpty(refeicoes)}" class="empty-message">
+            Nenhuma refeição cadastrada até o momento.
+        </div>
+
+        <table th:if="${!#lists.isEmpty(refeicoes)}">
             <thead>
             <tr>
                 <th>Nome</th>
                 <th>Tipo</th>
                 <th>Calorias</th>
+                <th>Proteínas</th>
+                <th>Carboidratos</th>
+                <th>Gorduras</th>
                 <th>Ações</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="r : ${refeicoes}">
-                <td th:text="${r.nome}">Nome</td>
-                <td th:text="${r.tipoRefeicao}">Tipo</td>
-                <td th:text="${r.calorias}">0</td>
-                <td>
-                    <a th:href="@{/refeicoes/detalhes/{id}(id=${r.id})}">Detalhes</a>
-                    <a th:href="@{/refeicoes/editar/{id}(id=${r.id})}">Editar</a>
-                    <form th:action="@{/refeicoes/excluir/{id}(id=${r.id})}" method="post" style="display:inline">
-                        <button type="submit">Excluir</button>
+            <tr th:each="refeicao : ${refeicoes}">
+                <td th:text="${refeicao.nome}">Nome</td>
+                <td th:text="${refeicao.tipoRefeicao}">Tipo</td>
+                <td th:text="${refeicao.calorias}">0</td>
+                <td th:text="${refeicao.proteinas}">0</td>
+                <td th:text="${refeicao.carboidratos}">0</td>
+                <td th:text="${refeicao.gorduras}">0</td>
+                <td class="table-actions">
+                    <a th:href="@{/refeicoes/detalhes/{id}(id=${refeicao.id})}">Detalhes</a>
+                    <a th:href="@{/refeicoes/editar/{id}(id=${refeicao.id})}">Editar</a>
+                    <form th:action="@{/refeicoes/excluir/{id}(id=${refeicao.id})}" method="post">
+                        <button type="submit" onclick="return confirm('Deseja excluir esta refeição?')">Excluir</button>
                     </form>
                 </td>
             </tr>

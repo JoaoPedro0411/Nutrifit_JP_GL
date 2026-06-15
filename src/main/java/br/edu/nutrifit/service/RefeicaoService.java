@@ -12,31 +12,40 @@ import java.util.List;
 @Transactional
 public class RefeicaoService {
 
-    private final RefeicaoRepository repo;
+    private final RefeicaoRepository repository;
 
-    public RefeicaoService(RefeicaoRepository repo) {
-        this.repo = repo;
+    public RefeicaoService(RefeicaoRepository repository) {
+        this.repository = repository;
     }
 
     public List<Refeicao> listarPorUsuario(Usuario usuario) {
-        return repo.findByUsuarioOrderByNomeAsc(usuario);
+        return repository.findByUsuarioOrderByNomeAsc(usuario);
     }
 
     public Refeicao buscarPorIdEUsuario(Long id, Usuario usuario) {
-        return repo.findByIdAndUsuario(id, usuario).orElseThrow(() -> new RuntimeException("Refeição não encontrada"));
+        return repository.findByIdAndUsuario(id, usuario)
+                .orElseThrow(() -> new RuntimeException("Refeição não encontrada."));
     }
 
     public Refeicao salvar(Refeicao refeicao, Usuario usuario) {
         refeicao.setUsuario(usuario);
-        return repo.save(refeicao);
+        return repository.save(refeicao);
     }
 
     public void excluir(Long id, Usuario usuario) {
-        Refeicao r = buscarPorIdEUsuario(id, usuario);
-        repo.delete(r);
+        Refeicao refeicao = buscarPorIdEUsuario(id, usuario);
+        repository.delete(refeicao);
     }
 
     public int calcularTotalCalorias(List<Refeicao> refeicoes) {
-        return refeicoes.stream().mapToInt(r -> r.getCalorias() != null ? r.getCalorias() : 0).sum();
+        int total = 0;
+
+        for (Refeicao refeicao : refeicoes) {
+            if (refeicao.getCalorias() != null) {
+                total += refeicao.getCalorias();
+            }
+        }
+
+        return total;
     }
 }

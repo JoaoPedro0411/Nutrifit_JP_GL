@@ -1,41 +1,49 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::main})}">
 <head>
-    <meta charset="UTF-8">
-    <title>Treinos</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <title>Treinos - NutriFit</title>
 </head>
 <body>
 <main class="page-content">
     <section class="list-container">
         <div class="form-title">
             <h1>Treinos</h1>
+            <p>Cadastre e acompanhe os treinos personalizados.</p>
+        </div>
+
+        <div class="dashboard-action">
             <a th:href="@{/treinos/novo}">Novo Treino</a>
         </div>
 
-        <table>
+        <div th:if="${#lists.isEmpty(treinos)}" class="empty-message">
+            Nenhum treino cadastrado até o momento.
+        </div>
+
+        <table th:if="${!#lists.isEmpty(treinos)}">
             <thead>
             <tr>
                 <th>Nome</th>
                 <th>Tipo</th>
                 <th>Nível</th>
                 <th>Duração</th>
-                <th>Frequência</th>
+                <th>Frequência semanal</th>
                 <th>Ações</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="t : ${treinos}">
-                <td th:text="${t.nome}">Nome</td>
-                <td th:text="${t.tipoTreino}">Tipo</td>
-                <td th:text="${t.nivel}">Nível</td>
-                <td th:text="${t.duracaoMinutos}">0</td>
-                <td th:text="${t.frequenciaSemanal}">0</td>
-                <td>
-                    <a th:href="@{/treinos/detalhes/{id}(id=${t.id})}">Detalhes</a>
-                    <a th:href="@{/treinos/editar/{id}(id=${t.id})}">Editar</a>
-                    <form th:action="@{/treinos/excluir/{id}(id=${t.id})}" method="post" style="display:inline">
-                        <button type="submit">Excluir</button>
+            <tr th:each="treino : ${treinos}">
+                <td th:text="${treino.nome}">Nome</td>
+                <td th:text="${treino.tipoTreino}">Tipo</td>
+                <td th:text="${treino.nivel}">Nível</td>
+                <td><span th:text="${treino.duracaoMinutos}">0</span> min</td>
+                <td><span th:text="${treino.frequenciaSemanal}">0</span>x por semana</td>
+                <td class="table-actions">
+                    <a th:href="@{/treinos/detalhes/{id}(id=${treino.id})}">Detalhes</a>
+                    <a th:href="@{/treinos/editar/{id}(id=${treino.id})}">Editar</a>
+                    <form th:action="@{/treinos/excluir/{id}(id=${treino.id})}" method="post">
+                        <button type="submit" onclick="return confirm('Deseja excluir este treino?')">Excluir</button>
                     </form>
                 </td>
             </tr>

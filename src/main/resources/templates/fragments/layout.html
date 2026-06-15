@@ -18,34 +18,42 @@
             <a th:href="@{/dashboard}">Dashboard</a>
         </li>
 
-        <li th:if="${usuarioLogado != null}">
+        <li sec:authorize="hasRole('USUARIO')">
             <a th:href="@{/refeicoes}">Refeições</a>
         </li>
 
-        <li th:if="${usuarioLogado != null}">
+        <li sec:authorize="hasRole('USUARIO')">
             <a th:href="@{/treinos}">Treinos</a>
         </li>
 
-        <li th:if="${usuarioLogado != null}">
+        <li sec:authorize="hasRole('USUARIO')">
             <a th:href="@{/planos}">Planos</a>
         </li>
 
-        <li th:if="${usuarioLogado != null}">
+        <li sec:authorize="hasRole('USUARIO')">
             <a th:href="@{/agendamentos}">Agendamentos</a>
         </li>
 
-        <li th:if="${usuarioLogado != null}">
+        <li sec:authorize="hasRole('USUARIO')">
             <a th:href="@{/hidratacoes}">Hidratação</a>
         </li>
 
-        <li th:if="${usuarioLogado != null}">
-            <a th:href="@{/logout}">Sair</a>
+        <li sec:authorize="hasRole('ADMIN')">
+            <a th:href="@{/usuarios}">Usuários</a>
         </li>
 
-        <li th:if="${usuarioLogado == null}">
+        <li sec:authorize="isAuthenticated()">
+            <a onclick="document.getElementById('frmLogout').submit(); return false" style="cursor:pointer">
+                Sair
+            </a>
+        </li>
+
+        <li sec:authorize="isAnonymous()">
             <a th:href="@{/login}">Login</a>
         </li>
     </ul>
+
+    <form id="frmLogout" style="display:none" method="post" th:action="@{/logout}"></form>
 </nav>
 
 <main th:replace="${content}">

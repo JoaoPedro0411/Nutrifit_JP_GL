@@ -12,28 +12,28 @@ import java.util.List;
 @Transactional
 public class TreinoService {
 
-    private final TreinoRepository repo;
+    private final TreinoRepository repository;
 
-    public TreinoService(TreinoRepository repo) {
-        this.repo = repo;
+    public TreinoService(TreinoRepository repository) {
+        this.repository = repository;
     }
 
     public List<Treino> listarPorUsuario(Usuario usuario) {
-        return repo.findByUsuarioOrderByNomeAsc(usuario);
+        return repository.findByUsuarioOrderByNomeAsc(usuario);
     }
 
     public Treino buscarPorIdEUsuario(Long id, Usuario usuario) {
-        return repo.findByIdAndUsuario(id, usuario).orElseThrow(() -> new RuntimeException("Treino não encontrado"));
+        return repository.findByIdAndUsuario(id, usuario)
+                .orElseThrow(() -> new RuntimeException("Treino não encontrado."));
     }
 
     public Treino salvar(Treino treino, Usuario usuario) {
         treino.setUsuario(usuario);
-        // validarTreino could be added here
-        return repo.save(treino);
+        return repository.save(treino);
     }
 
     public void excluir(Long id, Usuario usuario) {
-        Treino t = buscarPorIdEUsuario(id, usuario);
-        repo.delete(t);
+        Treino treino = buscarPorIdEUsuario(id, usuario);
+        repository.delete(treino);
     }
 }

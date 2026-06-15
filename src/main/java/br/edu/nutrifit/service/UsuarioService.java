@@ -2,6 +2,7 @@ package br.edu.nutrifit.service;
 
 import br.edu.nutrifit.model.Usuario;
 import br.edu.nutrifit.repository.UsuarioRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,9 +13,11 @@ import java.util.List;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<Usuario> listarTodos() {
@@ -33,7 +36,10 @@ public class UsuarioService {
         if (usuarioRepository.existsByEmail(usuario.getEmail())) {
             throw new RuntimeException("E-mail já cadastrado");
         }
+
         usuario.setAtivo(true);
+        usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+
         return usuarioRepository.save(usuario);
     }
 
@@ -41,6 +47,11 @@ public class UsuarioService {
         if (usuarioRepository.existsByEmailAndIdNot(usuario.getEmail(), usuario.getId())) {
             throw new RuntimeException("E-mail já cadastrado por outro usuário");
         }
+
+        if (usuario.getSenha() != null && !usuario.getSenha().startsWith("$2")) {
+            usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+        }
+
         return usuarioRepository.save(usuario);
     }
 

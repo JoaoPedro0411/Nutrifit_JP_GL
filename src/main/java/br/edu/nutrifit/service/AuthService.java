@@ -2,15 +2,18 @@ package br.edu.nutrifit.service;
 
 import br.edu.nutrifit.model.Usuario;
 import br.edu.nutrifit.repository.UsuarioRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
 
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthService(UsuarioRepository usuarioRepository) {
+    public AuthService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Usuario autenticar(String email, String senha) {
@@ -26,6 +29,6 @@ public class AuthService {
 
     public boolean validarSenha(String senhaDigitada, String senhaSalva) {
         if (senhaDigitada == null || senhaSalva == null) return false;
-        return senhaDigitada.equals(senhaSalva);
+        return passwordEncoder.matches(senhaDigitada, senhaSalva);
     }
 }
