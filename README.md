@@ -82,6 +82,10 @@ $env:DB_PASSWORD='sua_senha'
 
 O perfil MySQL usa `ddl-auto=validate`: crie e atualize o esquema do banco antes de iniciar a aplicação. O repositório ainda não inclui migrações versionadas para o esquema.
 
+## Segurança de credenciais
+
+Este projeto acadêmico permanece no GitHub como material de portfólio. Credenciais foram removidas da configuração atual por segurança; o perfil MySQL recebe os dados de conexão por variáveis de ambiente. Não reutilize valores que possam ter aparecido em commits antigos. Se algum dado de acesso real foi usado, substitua-o antes de qualquer uso fora do ambiente local.
+
 ## Testes
 
 Execute `./mvnw test` ou `.\mvnw.cmd test`. Atualmente há um teste de inicialização do contexto Spring; a cobertura de regras de negócio e fluxos web ainda pode ser ampliada.
