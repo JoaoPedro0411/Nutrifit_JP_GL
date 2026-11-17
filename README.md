@@ -1,92 +1,108 @@
 # NutriFit
 
-Sistema web acadêmico para acompanhamento nutricional, treinos, agendamentos e hidratação.
+Aplicação web acadêmica desenvolvida em dupla para organizar dados de acompanhamento nutricional, treinos, agendamentos e hidratação.
 
-## Integrantes
+## Equipe
 
 - João Pedro Carneiro da Fonseca
 - Gabriel Leão
 
+## Funcionalidades
+
+- Cadastro, login e logout
+- Dashboard associado ao usuário autenticado
+- CRUD de refeições e planos alimentares
+- CRUD de treinos e agendamentos
+- Registro de hidratação por usuário e data
+- Perfis de acesso para usuário e administrador
+- Banco H2 em memória para desenvolvimento e configuração MySQL para execução local em perfil de produção
+
 ## Tecnologias
 
-- Java 17
-- Spring Boot
-- Spring Web MVC
-- Spring Data JPA
-- Thymeleaf
-- H2
-- MySQL
-- Lombok
-- Maven
-
-## Funcionalidades entregues no MVP
-
-- Cadastro de usuário
-- Login e logout com sessão HTTP manual
-- Dashboard com resumo do usuário logado
-- CRUD de refeições
-- CRUD de planos alimentares com seleção de refeições do próprio usuário
-- CRUD de treinos
-- CRUD de agendamentos com status
-- Registro de hidratação por data com unicidade por usuário
-- Layout base com fragments, alertas e navegação
+Java 17, Spring Boot, Spring Security, Spring Data JPA, Thymeleaf, H2, MySQL, Lombok e Maven.
 
 ## Arquitetura
 
-O projeto está organizado em camadas:
+O código segue uma organização em camadas:
 
-- `controller`: recebe requisições, valida sessão e encaminha para a view
-- `service`: concentra regras de negócio
-- `repository`: acesso ao banco com Spring Data JPA
-- `model`: entidades e enums
-- `dto`: objetos de apoio para telas agregadas
+- `controller`: endpoints web e integração com as páginas
+- `service`: regras de negócio
+- `repository`: persistência com Spring Data JPA
+- `model` e `enums`: entidades e tipos de domínio
+- `dto`: dados agregados para as telas
 - `templates`: páginas Thymeleaf
 - `static`: CSS e JavaScript
 
-## Como executar em desenvolvimento
+## Executar em desenvolvimento
 
-O perfil padrão é `dev`, com H2 em memória.
+Pré-requisitos: Java 17.
 
-```powershell
+Linux/macOS:
+
+```bash
 ./mvnw spring-boot:run
 ```
 
-Se quiser validar a compilação manualmente:
+Windows PowerShell:
 
 ```powershell
-./mvnw clean compile
+.\mvnw.cmd spring-boot:run
 ```
 
-## Produção
+O perfil padrão é `dev`, que usa H2 em memória. O script `import.sql` cria contas de demonstração locais:
 
-O perfil `prod` está configurado para MySQL. Ajuste usuário, senha e URL em `application-prod.properties` antes de usar.
+- Usuário: `user@example.com` / `senha`
+- Administrador: `admin@example.com` / `adminpass`
 
-## Observações técnicas
+Essas contas e o banco H2 servem apenas para desenvolvimento local; não as reutilize em ambientes externos.
 
-- O sistema usa `HttpSession` e salva o usuário logado em `usuarioLogado`.
-- As rotas privadas sempre verificam a sessão antes de listar, editar ou excluir dados.
-- A hidratação é protegida por uma restrição única de `usuario + data`.
-- A autenticação do MVP foi mantida simples para fins acadêmicos.
+## Perfil MySQL
 
-## Interface
+O perfil `prod` exige as variáveis `DB_URL`, `DB_USERNAME` e `DB_PASSWORD`. A configuração não contém credenciais versionadas.
 
-As páginas principais já existem em Thymeleaf para login, cadastro, dashboard e os CRUDs do MVP. As capturas de tela podem ser inseridas nesta seção quando o sistema for apresentado.
+Linux/macOS:
+
+```bash
+export PROFILE=prod
+export DB_URL='jdbc:mysql://localhost:3306/nutriFitDB?useSSL=false&serverTimezone=America/Sao_Paulo'
+export DB_USERNAME='seu_usuario'
+export DB_PASSWORD='sua_senha'
+./mvnw spring-boot:run
+```
+
+Windows PowerShell:
+
+```powershell
+$env:PROFILE='prod'
+$env:DB_URL='jdbc:mysql://localhost:3306/nutriFitDB?useSSL=false&serverTimezone=America/Sao_Paulo'
+$env:DB_USERNAME='seu_usuario'
+$env:DB_PASSWORD='sua_senha'
+.\mvnw.cmd spring-boot:run
+```
+
+O perfil MySQL usa `ddl-auto=validate`: crie e atualize o esquema do banco antes de iniciar a aplicação. O repositório ainda não inclui migrações versionadas para o esquema.
+
+## Testes
+
+Execute `./mvnw test` ou `.\mvnw.cmd test`. Atualmente há um teste de inicialização do contexto Spring; a cobertura de regras de negócio e fluxos web ainda pode ser ampliada.
+
+## Limitações conhecidas
+
+Este é um MVP acadêmico. A configuração de produção exige um banco preparado e credenciais fornecidas pelo ambiente. O projeto não inclui migrações de banco nem cobertura automatizada abrangente dos fluxos.
 
 ## Estrutura principal
 
 ```text
-src/main/java/br/edu/nutrifit
-├── controller
-├── dto
-├── model
-├── repository
-├── service
-└── NutriFitApplication.java
+src/main/java/br/edu/nutrifit/
+├── config/
+├── controller/
+├── dto/
+├── model/
+├── repository/
+└── service/
 
-src/main/resources
-├── application.properties
-├── application-dev.properties
-├── application-prod.properties
-├── static
-└── templates
+src/main/resources/
+├── application*.properties
+├── static/
+└── templates/
 ```
